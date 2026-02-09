@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khaacho Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Khaacho Admin Panel</h1>
+            <div id="user-info"></div>
+            <button onclick="logout()" class="btn-secondary">Logout</button>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab active" onclick="showTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="showTab('retailers')">Retailers</button>
+            <button class="tab" onclick="showTab('vendors')">Vendors</button>
+            <button class="tab" onclick="showTab('orders')">Orders</button>
+            <button class="tab" onclick="showTab('payments')">Payments</button>
+            <button class="tab" onclick="showTab('credit-scores')">Credit Scores</button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Orders Today</h3>
+                    <div class="stat-value" id="orders-today">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Outstanding Credit</h3>
+                    <div class="stat-value" id="outstanding-credit">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Retailers</h3>
+                    <div class="stat-value" id="active-retailers">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Vendors</h3>
+                    <div class="stat-value" id="active-vendors">-</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Recent Orders</h2>
+                <table id="recent-orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Retailer</th>
+                            <th>Vendor</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-orders"></tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>Overdue Accounts</h2>
+                <table id="overdue-table">
+                    <thead>
+                        <tr>
+                            <th>Retailer</th>
+                            <th>Outstanding</th>
+                            <th>Credit Score</th>
+                            <th>Last Payment</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overdue-accounts"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Retailers Tab -->
+        <div id="retailers" class="tab-content">
+            <div class="section-header">
+                <h2>Retailer Management</h2>
+                <button onclick="showModal('add-retailer')" class="btn-primary">Add Retailer</button>
+            </div>
+            
+            <div class="filters">
+                <input type="text" id="retailer-search" placeholder="Search retailers..." onkeyup="searchRetailers()">
+                <select id="retailer-status-filter" onchange="filterRetailers()">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending Approval</option>
+                    <option value="approved">Approved</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Shop Name</th>
+                        <th>Owner</th>
+                        <th>Phone</th>
+                        <th>Credit Score</th>
+                        <th>Credit Limit</th>
+                        <th>Outstanding</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="retailers-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Vendors Tab -->
+        <div id="vendors" class="tab-content">
+            <div class="section-header">
+                <h2>Vendor Management</h2>
+                <button onclick="showModal('add-vendor')" class="btn-primary">Add Vendor</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Business Name</th>
+                        <th>Owner</th>
+                        <th>Phone</th>
+                        <th>Total Sales</th>
+                        <th>Products</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="vendors-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="orders" class="tab-content">
+            <div class="section-header">
+                <h2>Order Management</h2>
+                <button onclick="showModal('create-order')" class="btn-primary">Create Order</button>
+            </div>
+
+            <div class="filters">
+                <input type="text" id="order-search" placeholder="Search orders..." onkeyup="searchOrders()">
+                <select id="order-status-filter" onchange="filterOrders()">
+                    <option value="">All Status</option>
+                    <option value="DRAFT">Draft</option>
+                    <option value="CONFIRMED">Confirmed</option>
+                    <option value="VENDOR_ASSIGNED">Vendor Assigned</option>
+                    <option value="ACCEPTED">Accepted</option>
+                    <option value="DISPATCHED">Dispatched</option>
+                    <option value="DELIVERED">Delivered</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                </select>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Retailer</th>
+                        <th>Vendor</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Due</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Payments Tab -->
+        <div id="payments" class="tab-content">
+            <div class="section-header">
+                <h2>Payment Management</h2>
+                <button onclick="showModal('record-payment')" class="btn-primary">Record Payment</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Payment #</th>
+                        <th>Retailer</th>
+                        <th>Order #</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="payments-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Credit Scores Tab -->
+        <div id="credit-scores" class="tab-content">
+            <div class="section-header">
+                <h2>Credit Score Management</h2>
+                <button onclick="recalculateAllScores()" class="btn-primary">Recalculate All Scores</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Average Score</h3>
+                    <div class="stat-value" id="avg-credit-score">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Excellent (750+)</h3>
+                    <div class="stat-value" id="excellent-count">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Good (650-749)</h3>
+                    <div class="stat-value" id="good-count">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Needs Attention (&lt;550)</h3>
+                    <div class="stat-value" id="poor-count">-</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Retailer Credit Scores</h2>
+                <input type="text" id="score-search" placeholder="Search retailers..." onkeyup="searchScores()">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Retailer</th>
+                            <th>Current Score</th>
+                            <th>Category</th>
+                            <th>Trend (30d)</th>
+                            <th>Credit Limit</th>
+                            <th>Utilization</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="credit-scores-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay" onclick="closeModal()"></div>
+
+    <!-- Approve Retailer Modal -->
+    <div id="approve-retailer-modal" class="modal">
+        <h3>Approve Retailer</h3>
+        <form onsubmit="approveRetailer(event)">
+            <input type="hidden" id="approve-retailer-id">
+            <label>Credit Limit (Rs.)</label>
+            <input type="number" id="approve-credit-limit" required min="0" step="100">
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Approve</button>
+                <button type="button" onclick="closeModal()" class="btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Assign Vendor Modal -->
+    <div id="assign-vendor-modal" class="modal">
+        <h3>Assign Vendor to Order</h3>
+        <form onsubmit="assignVendor(event)">
+            <input type="hidden" id="assign-order-id">
+            <label>Select Vendor</label>
+            <select id="assign-vendor-select" required></select>
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Assign</button>
+                <button type="button" onclick="closeModal()" class="btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Create Order Modal -->
+    <div id="create-order-modal" class="modal large">
+        <h3>Create Manual Order</h3>
+        <form onsubmit="createOrder(event)">
+            <label>Retailer</label>
+            <select id="create-order-retailer" required onchange="loadVendorProducts()"></select>
+            
+            <label>Vendor</label>
+            <select id="create-order-vendor" required onchange="loadVendorProducts()"></select>
+            
+            <label>Products</label>
+            <div id="order-items">
+                <div class="order-item">
+                    <select class="product-select" required></select>
+                    <input type="number" class="quantity-input" placeholder="Qty" required min="1">
+                    <button type="button" onclick="removeOrderItem(this)" class="btn-danger">×</button>
+                </div>
+            </div>
+            <button type="button" onclick="addOrderItem()" class="btn-secondary">+ Add Item</button>
+            
+            <label>Notes</label>
+            <textarea id="create-order-notes" rows="3"></textarea>
+            
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Create Order</button>
+                <button type="button" onclick="closeModal()" class="btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Record Payment Modal -->
+    <div id="record-payment-modal" class="modal">
+        <h3>Record Payment</h3>
+        <form onsubmit="recordPayment(event)">
+            <label>Order</label>
+            <select id="payment-order" required onchange="updatePaymentInfo()"></select>
+            
+            <div id="payment-info" style="display:none; margin: 10px 0; padding: 10px; background: #f5f5f5;">
+                <p>Total: Rs.<span id="payment-total">0</span></p>
+                <p>Paid: Rs.<span id="payment-paid">0</span></p>
+                <p>Due: Rs.<span id="payment-due">0</span></p>
+            </div>
+            
+            <label>Amount (Rs.)</label>
+            <input type="number" id="payment-amount" required min="1" step="0.01">
+            
+            <label>Payment Method</label>
+            <select id="payment-method" required>
+                <option value="CASH">Cash</option>
+                <option value="BANK_TRANSFER">Bank Transfer</option>
+                <option value="MOBILE_MONEY">Mobile Money</option>
+                <option value="CHEQUE">Cheque</option>
+            </select>
+            
+            <label>Reference Number</label>
+            <input type="text" id="payment-reference">
+            
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Record Payment</button>
+                <button type="button" onclick="closeModal()" class="btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Edit Order Modal -->
+    <div id="edit-order-modal" class="modal large">
+        <h3>Edit Order</h3>
+        <form onsubmit="updateOrder(event)">
+            <input type="hidden" id="edit-order-id">
+            <div id="edit-order-items"></div>
+            <label>Notes</label>
+            <textarea id="edit-order-notes" rows="3"></textarea>
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Update Order</button>
+                <button type="button" onclick="closeModal()" class="btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Credit Score Details Modal -->
+    <div id="score-details-modal" class="modal large">
+        <h3>Credit Score Details</h3>
+        <div id="score-details-content"></div>
+        <div class="modal-actions">
+            <button type="button" onclick="closeModal()" class="btn-secondary">Close</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

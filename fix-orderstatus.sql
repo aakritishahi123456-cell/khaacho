@@ -1,0 +1,1 @@
+DROP TYPE IF EXISTS "OrderStatus_old" CASCADE;

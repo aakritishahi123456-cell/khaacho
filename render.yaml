@@ -1,0 +1,143 @@
+services:
+  # Web Service - API Server
+  - type: web
+    name: khaacho-api
+    env: node
+    region: oregon
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:web
+    healthCheckPath: /api/v1/monitoring/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: API_VERSION
+        value: v1
+      - key: DATABASE_URL
+        fromDatabase:
+          name: khaacho-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: khaacho-redis
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: WHATSAPP_API_URL
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+      - key: WHATSAPP_VERIFY_TOKEN
+        sync: false
+      - key: WHATSAPP_ASYNC
+        value: true
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: LOG_LEVEL
+        value: info
+      - key: ENABLE_METRICS
+        value: true
+      - key: ENABLE_BACKGROUND_JOBS
+        value: false
+      - key: ASYNC_NOTIFICATIONS
+        value: true
+      - key: MONITORING_ORDER_RATE_THRESHOLD
+        value: 100
+      - key: MONITORING_JOB_FAILURE_THRESHOLD
+        value: 10
+      - key: MONITORING_WHATSAPP_FAILURE_THRESHOLD
+        value: 20
+      - key: MONITORING_API_ERROR_THRESHOLD
+        value: 5
+      - key: MONITORING_DB_LATENCY_THRESHOLD
+        value: 1000
+      - key: MONITORING_CPU_THRESHOLD
+        value: 80
+      - key: MONITORING_MEMORY_THRESHOLD
+        value: 80
+      - key: MONITORING_DISK_THRESHOLD
+        value: 85
+      - key: MONITORING_ALERT_COOLDOWN
+        value: 300000
+      - key: MONITORING_ENABLE_EMAIL_ALERTS
+        value: true
+      - key: MONITORING_ENABLE_SMS_ALERTS
+        value: false
+      - key: MONITORING_ENABLE_WEBHOOK_ALERTS
+        value: false
+      - key: ALERT_EMAIL_FROM
+        sync: false
+      - key: ALERT_EMAIL_TO
+        sync: false
+
+  # Worker Service - Background Jobs
+  - type: worker
+    name: khaacho-worker
+    env: node
+    region: oregon
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:worker
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_VERSION
+        value: v1
+      - key: DATABASE_URL
+        fromDatabase:
+          name: khaacho-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: khaacho-redis
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WHATSAPP_API_URL
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+      - key: WHATSAPP_VERIFY_TOKEN
+        sync: false
+      - key: WHATSAPP_ASYNC
+        value: true
+      - key: LOG_LEVEL
+        value: info
+      - key: ENABLE_METRICS
+        value: true
+      - key: ENABLE_BACKGROUND_JOBS
+        value: true
+      - key: MONITORING_ORDER_RATE_THRESHOLD
+        value: 100
+      - key: MONITORING_JOB_FAILURE_THRESHOLD
+        value: 10
+      - key: MONITORING_WHATSAPP_FAILURE_THRESHOLD
+        value: 20
+
+databases:
+  - name: khaacho-db
+    databaseName: khaacho
+    user: khaacho
+    plan: starter
+    region: oregon
+    postgresMajorVersion: 15
+
+services:
+  - type: redis
+    name: khaacho-redis
+    region: oregon
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
