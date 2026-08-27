@@ -3,8 +3,15 @@
   "name": "khaacho-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-08-27",
+  "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
   "vars": {
     "ALLOWED_ORIGINS": "https://khaacho.com,https://www.khaacho.com,http://localhost:3000"
-  }
+  },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "ec1e5b5064ec4edd87c764a2dde71657"
+    }
+  ]
 }
