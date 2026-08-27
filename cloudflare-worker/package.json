@@ -9,7 +9,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.2",
     "pg": "^8.18.0"
   },
   "devDependencies": {
