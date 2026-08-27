@@ -126,6 +126,14 @@ services:
       - key: MONITORING_WHATSAPP_FAILURE_THRESHOLD
         value: 20
 
+  # Redis - queue/cache used by the API and worker
+  - type: redis
+    name: khaacho-redis
+    region: oregon
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
+
 databases:
   - name: khaacho-db
     databaseName: khaacho
@@ -133,11 +141,3 @@ databases:
     plan: starter
     region: oregon
     postgresMajorVersion: 15
-
-services:
-  - type: redis
-    name: khaacho-redis
-    region: oregon
-    plan: starter
-    maxmemoryPolicy: allkeys-lru
-    ipAllowList: []
