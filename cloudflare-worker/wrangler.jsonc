@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "khaacho-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-27",
+  "observability": { "enabled": true },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://khaacho.com,https://www.khaacho.com,http://localhost:3000"
+  }
+}
